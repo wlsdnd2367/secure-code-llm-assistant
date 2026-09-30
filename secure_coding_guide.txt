@@ -1,0 +1,20 @@
+[파이썬 시큐어 코딩 가이드라인]
+
+1. SQL 인젝션 (SQL Injection) 방어
+- 원인: f-string이나 .format()을 사용하여 사용자 입력값을 SQL 쿼리문에 직접 문자열로 결합할 때 발생한다. 공격자가 ' OR 1=1 -- 와 같은 페이로드를 입력하면 쿼리 구조가 변조된다.
+- 방어 대책: 데이터베이스 드라이버(sqlite3, psycopg2, pymysql 등)에서 제공하는 파라미터화된 쿼리(Parameterized Query)를 사용해야 한다.
+- 안전한 코드 예시:
+  # sqlite3의 경우 ? (물음표)를 플레이스홀더로 사용
+  query = "SELECT * FROM users WHERE id = ?"
+  cursor.execute(query, (user_input,))
+  # pymysql, psycopg2의 경우 %s 를 사용
+  query = "SELECT * FROM users WHERE id = %s"
+  cursor.execute(query, (user_input,))
+
+2. 커맨드 인젝션 (Command Injection) 방어
+- 원인: os.system()이나 subprocess.Popen(), subprocess.run() 사용 시 shell=True 옵션을 활성화하고 사용자 입력을 명령어 문자열에 직접 결합할 때 발생한다. 공격자가 ; ls -al 또는 & cat /etc/passwd를 입력하면 임의의 시스템 명령어가 실행된다.
+- 방어 대책: os.system() 사용을 금지한다. 대신 subprocess.run()을 사용하되 반드시 shell=False(기본값)로 설정하고, 명령어와 인자들을 띄어쓰기 기준으로 나눈 리스트(List) 형태로 전달해야 한다.
+- 안전한 코드 예시:
+  import subprocess
+  # 리스트 형태로 명령어와 인자 분리 전달
+  subprocess.run(["ping", "-c", "4", user_input], capture_output=True, text=True)

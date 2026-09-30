@@ -62,4 +62,4 @@ python3 -m compileall -q app.py list_models.py security_config.py
 ## 보안
 
 API 키는 소스 코드에 저장하지 않고 `.env`의 `GOOGLE_API_KEY`로만 전달합니다.
-`.env`는 Git에서 제외됩니다. 키가 노출됐다면 즉시 폐기하고 재발급하세요.
+`.env`는 Git에서 제외됩니다. 키가 노출됐다면 즉시 폐기하고 재발급
